@@ -1,4 +1,6 @@
 import icons from "../img/icons.svg";
+import "core-js/stable";
+import "regenerator-runtime";
 console.log(icons);
 const recipeContainer = document.querySelector('.recipe');
 
@@ -104,7 +106,7 @@ const showRecipe = async function() {
           return `
         <li class="recipe__ingredient">
           <svg class="recipe__icon">
-            <use href="src/img/icons.svg#icon-check"></use>
+            <use href="${icons}#icon-check"></use>
           </svg>
           <div class="recipe__quantity">${ing.quantity}</div>
           <div class="recipe__description">

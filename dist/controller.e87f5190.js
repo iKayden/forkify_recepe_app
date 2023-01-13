@@ -133,10 +133,22 @@ const timeout = function (s) {
     }, s * 1000);
   });
 };
-
+const renderSpinner = function (parentEl) {
+  const spinner = `
+  <div class="spinner">
+    <svg>
+      <use href="${_icons.default}#icon-loader"></use>
+    </svg>
+  </div>
+  `;
+  parentEl.innerHTML = "";
+  parentEl.insertAdjacentHTML("afterbegin", spinner);
+};
 // https://forkify-api.herokuapp.com/v2
 const showRecipe = async function () {
   try {
+    // Loading data
+    renderSpinner(recipeContainer);
     // GETting data
     const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bcd09`);
     const data = await res.json();

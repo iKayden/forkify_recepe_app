@@ -117,7 +117,14 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/js/controller.js":[function(require,module,exports) {
+})({"src/img/icons.svg":[function(require,module,exports) {
+module.exports = "/icons.ae3c38d5.svg";
+},{}],"src/js/controller.js":[function(require,module,exports) {
+"use strict";
+
+var _icons = _interopRequireDefault(require("../img/icons.svg"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+console.log(_icons.default);
 const recipeContainer = document.querySelector('.recipe');
 const timeout = function (s) {
   return new Promise(function (_, reject) {
@@ -130,6 +137,7 @@ const timeout = function (s) {
 // https://forkify-api.herokuapp.com/v2
 const showRecipe = async function () {
   try {
+    // GETting data
     const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bcd09`);
     const data = await res.json();
     if (!res.ok) throw new Error(`${data.message} (Status: ${res.status})`);
@@ -147,11 +155,104 @@ const showRecipe = async function () {
       ingredients: recipe.ingredients
     };
     console.log(recipe);
+
+    // Rendering Data
+    const html = `
+      <figure class="recipe__fig">
+        <img src="${recipe.image}" alt="${recipe.title}" class="recipe__img" />
+        <h1 class="recipe__title">
+          <span>${recipe.title}</span>
+        </h1>
+      </figure>
+
+      <div class="recipe__details">
+        <div class="recipe__info">
+          <svg class="recipe__info-icon">
+            <use href="${_icons.default}#icon-clock"></use>
+          </svg>
+          <span class="recipe__info-data recipe__info-data--minutes">${recipe.cookingTime}</span>
+          <span class="recipe__info-text">minutes</span>
+        </div>
+
+        <div class="recipe__info">
+          <svg class="recipe__info-icon">
+            <use href="${_icons.default}#icon-users"></use>
+          </svg>
+          <span class="recipe__info-data recipe__info-data--people">${recipe.servings}</span>
+          <span class="recipe__info-text">Servings</span>
+
+          <div class="recipe__info-buttons">
+            <button class="btn--tiny btn--increase-servings">
+              <svg>
+                <use href="${_icons.default}#icon-minus-circle"></use>
+              </svg>
+            </button>
+            <button class="btn--tiny btn--increase-servings">
+              <svg>
+                <use href="${_icons.default}#icon-plus-circle"></use>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="recipe__user-generated">
+          <svg>
+            <use href="${_icons.default}#icon-user"></use>
+          </svg>
+        </div>
+        <button class="btn--round">
+          <svg class="">
+            <use href="${_icons.default}#icon-bookmark-fill"></use>
+          </svg>
+        </button>
+      </div>
+
+      <div class="recipe__ingredients">
+        <h2 class="heading--2">Recipe ingredients</h2>
+        <ul class="recipe__ingredient-list">
+        ${recipe.ingredients.map(ing => {
+      return `
+        <li class="recipe__ingredient">
+          <svg class="recipe__icon">
+            <use href="src/img/icons.svg#icon-check"></use>
+          </svg>
+          <div class="recipe__quantity">${ing.quantity}</div>
+          <div class="recipe__description">
+            <span class="recipe__unit">${ing.unit}</span>
+            ${ing.description}
+          </div>
+        </li>
+      `;
+    }).join("")}
+      </div >
+
+  <div class="recipe__directions">
+    <h2 class="heading--2">How to cook it</h2>
+    <p class="recipe__directions-text">
+      This recipe was carefully designed and tested by
+      <span class="recipe__publisher">${recipe.publisher}</span>. Please check out
+      directions at their website.
+    </p>
+    <a
+      class="btn--small recipe__btn"
+      href="${recipe.sourceUrl}"
+      target="_blank"
+    >
+      <span>Directions</span>
+      <svg class="search__icon">
+        <use href="src/img/icons.svg#icon-arrow-right"></use>
+      </svg>
+    </a>
+  </div>;
+`;
+    recipeContainer.innerHTML = "";
+    recipeContainer.insertAdjacentHTML("afterbegin", html);
   } catch (error) {
     alert(error);
   }
 }();
-},{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+;
+},{"../img/icons.svg":"src/img/icons.svg"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

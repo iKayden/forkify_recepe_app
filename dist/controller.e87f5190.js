@@ -128,8 +128,29 @@ const timeout = function (s) {
 };
 
 // https://forkify-api.herokuapp.com/v2
-
-///////////////////////////////////////
+const showRecipe = async function () {
+  try {
+    const res = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bcd09`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(`${data.message} (Status: ${res.status})`);
+    let {
+      recipe
+    } = data.data;
+    recipe = {
+      id: recipe.id,
+      title: recipe.title,
+      publisher: recipe.publisher,
+      sourceUrl: recipe.source_url,
+      image: recipe.image_url,
+      servings: recipe.servings,
+      cookingTime: recipe.cooking_time,
+      ingredients: recipe.ingredients
+    };
+    console.log(recipe);
+  } catch (error) {
+    alert(error);
+  }
+}();
 },{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

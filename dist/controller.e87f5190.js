@@ -985,7 +985,68 @@ const loadSearchResult = async function (query) {
 exports.loadSearchResult = loadSearchResult;
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
-},{}],"node_modules/fracty/fracty.js":[function(require,module,exports) {
+},{}],"src/js/views/View.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _icons = _interopRequireDefault(require("../../img/icons.svg"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+class View {
+  _data;
+  render(data) {
+    this._data = data;
+    const html = this._generateMarkup();
+    this._clear();
+    this._parentElement.insertAdjacentHTML("afterbegin", html);
+  }
+  _clear() {
+    this._parentElement.innerHTML = "";
+  }
+  renderSpinner() {
+    const spinner = `
+    <div class="spinner">
+      <svg>
+        <use href="${_icons.default}#icon-loader"></use>
+      </svg>
+    </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML("afterbegin", spinner);
+  }
+  renderError(errMsg = this._errMsg) {
+    const html = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${errMsg}</p>
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML("afterbegin", html);
+  }
+  renderMessage(msg = this._message) {
+    const html = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-smile"></use>
+          </svg>
+        </div>
+        <p>${msg}</p>
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML("afterbegin", html);
+  }
+}
+exports.default = View;
+},{"../../img/icons.svg":"src/img/icons.svg"}],"node_modules/fracty/fracty.js":[function(require,module,exports) {
 // FRACTY CONVERTS DECIMAL NUMBERS TO FRACTIONS BY ASSUMING THAT TRAILING PATTERNS FROM 10^-2 CONTINUE TO REPEAT
 // The assumption is based on the most standard numbering conventions
 // e.g. 3.51 will convert to 3 51/100 while 3.511 will convert to 3 23/45
@@ -1157,73 +1218,26 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _View = _interopRequireDefault(require("./View.js"));
 var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 var _fracty = _interopRequireDefault(require("fracty"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-class RecipeView {
-  #parentElement = document.querySelector('.recipe');
-  #data;
-  #errMsg = "We couldn't find that recipe, please try something else. 🫠";
-  #message = "Great Success!";
-  render(data) {
-    this.#data = data;
-    const html = this.#generateMarkup();
-    this.#clear();
-    this.#parentElement.insertAdjacentHTML("afterbegin", html);
-  }
-  #clear() {
-    this.#parentElement.innerHTML = "";
-  }
-  renderSpinner() {
-    const spinner = `
-    <div class="spinner">
-      <svg>
-        <use href="${_icons.default}#icon-loader"></use>
-      </svg>
-    </div>
-    `;
-    this.#clear();
-    this.#parentElement.insertAdjacentHTML("afterbegin", spinner);
-  }
-  renderError(errMsg = this.#errMsg) {
-    const html = `
-      <div class="error">
-        <div>
-          <svg>
-            <use href="${_icons.default}#icon-alert-triangle"></use>
-          </svg>
-        </div>
-        <p>${errMsg}</p>
-      </div>
-    `;
-    this.#clear();
-    this.#parentElement.insertAdjacentHTML("afterbegin", html);
-  }
-  renderMessage(msg = this.#message) {
-    const html = `
-      <div class="message">
-        <div>
-          <svg>
-            <use href="${_icons.default}#icon-smile"></use>
-          </svg>
-        </div>
-        <p>${msg}</p>
-      </div>
-    `;
-    this.#clear();
-    this.#parentElement.insertAdjacentHTML("afterbegin", html);
-  }
+class RecipeView extends _View.default {
+  _parentElement = document.querySelector('.recipe');
+  _errMsg = "We couldn't find that recipe, please try something else. 🫠";
+  _message = "Great Success!";
+
   // PUBLISHER <-> SUBSCRIBER method of event handling delegation
   // This is a Publisher (where you can add a handler/subscriber) function from controller
   addHandlerRender(handler) {
     ["hashchange", "load"].forEach(e => window.addEventListener(e, handler));
   }
-  #generateMarkup() {
+  _generateMarkup() {
     return `
       <figure class="recipe__fig">
-        <img src="${this.#data.image}" alt="${this.#data.title}" class="recipe__img" />
+        <img src="${this._data.image}" alt="${this._data.title}" class="recipe__img" />
         <h1 class="recipe__title">
-          <span>${this.#data.title}</span>
+          <span>${this._data.title}</span>
         </h1>
       </figure>
 
@@ -1232,7 +1246,7 @@ class RecipeView {
           <svg class="recipe__info-icon">
             <use href="${_icons.default}#icon-clock"></use>
           </svg>
-          <span class="recipe__info-data recipe__info-data--minutes">${this.#data.cookingTime}</span>
+          <span class="recipe__info-data recipe__info-data--minutes">${this._data.cookingTime}</span>
           <span class="recipe__info-text">minutes</span>
         </div>
 
@@ -1240,7 +1254,7 @@ class RecipeView {
           <svg class="recipe__info-icon">
             <use href="${_icons.default}#icon-users"></use>
           </svg>
-          <span class="recipe__info-data recipe__info-data--people">${this.#data.servings}</span>
+          <span class="recipe__info-data recipe__info-data--people">${this._data.servings}</span>
           <span class="recipe__info-text">Servings</span>
 
           <div class="recipe__info-buttons">
@@ -1272,19 +1286,19 @@ class RecipeView {
       <div class="recipe__ingredients">
         <h2 class="heading--2">Recipe ingredients</h2>
         <ul class="recipe__ingredient-list">
-        ${this.#data.ingredients.map(this.#generateIngredient).join("")}
+        ${this._data.ingredients.map(this._generateIngredient).join("")}
       </div >
 
   <div class="recipe__directions">
     <h2 class="heading--2">How to cook it</h2>
     <p class="recipe__directions-text">
       This recipe was carefully designed and tested by
-      <span class="recipe__publisher">${this.#data.publisher}</span>. Please check out
+      <span class="recipe__publisher">${this._data.publisher}</span>. Please check out
       directions at their website.
     </p>
     <a
       class="btn--small recipe__btn"
-      href="${this.#data.sourceUrl}"
+      href="${this._data.sourceUrl}"
       target="_blank"
     >
       <span>Directions</span>
@@ -1295,7 +1309,7 @@ class RecipeView {
   </div>;
 `;
   }
-  #generateIngredient(ing) {
+  _generateIngredient(ing) {
     return `
     <li class="recipe__ingredient">
       <svg class="recipe__icon">
@@ -1312,7 +1326,7 @@ class RecipeView {
 }
 var _default = new RecipeView();
 exports.default = _default;
-},{"../../img/icons.svg":"src/img/icons.svg","fracty":"node_modules/fracty/fracty.js"}],"src/js/views/searchView.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg","fracty":"node_modules/fracty/fracty.js"}],"src/js/views/searchView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1320,17 +1334,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 class SearchView {
-  #parentElement = document.querySelector(".search");
+  _parentElement = document.querySelector(".search");
   getQuery() {
-    const query = this.#parentElement.querySelector(".search__field").value;
+    const query = this._parentElement.querySelector(".search__field").value;
     this.#clearInput();
     return query;
   }
   #clearInput() {
-    this.#parentElement.querySelector(".search__field").value = "";
+    this._parentElement.querySelector(".search__field").value = "";
   }
   addHandlerSearch(handler) {
-    this.#parentElement.addEventListener("submit", function (e) {
+    this._parentElement.addEventListener("submit", function (e) {
       e.preventDefault();
       handler();
     });
@@ -1338,7 +1352,42 @@ class SearchView {
 }
 var _default = new SearchView();
 exports.default = _default;
-},{}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
+},{}],"src/js/views/resultsView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _View = _interopRequireDefault(require("./View.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+class ResultView extends _View.default {
+  _parentElement = document.querySelector(".results");
+  _generateMarkup() {
+    console.log(this._data);
+    return `
+      <li class="preview">
+        <a class="preview__link preview__link--active" href="#23456">
+          <figure class="preview__fig">
+            <img src="src/img/test-1.jpg" alt="Test" />
+          </figure>
+          <div class="preview__data">
+            <h4 class="preview__title">Pasta with Tomato Cream ...</h4>
+            <p class="preview__publisher">The Pioneer Woman</p>
+            <div class="preview__user-generated">
+              <svg>
+                <use href="src/img/icons.svg#icon-user"></use>
+              </svg>
+            </div>
+          </div>
+        </a>
+      </li>
+    `;
+  }
+}
+var _default = new ResultView();
+exports.default = _default;
+},{"./View.js":"src/js/views/View.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
 var check = function (it) {
   return it && it.Math == Math && it;
@@ -16664,6 +16713,7 @@ module.exports = require('../internals/path');
 var model = _interopRequireWildcard(require("./model.js"));
 var _recipeView = _interopRequireDefault(require("./views/recipeView.js"));
 var _searchView = _interopRequireDefault(require("./views/searchView.js"));
+var _resultsView = _interopRequireDefault(require("./views/resultsView.js"));
 require("core-js/stable");
 require("regenerator-runtime");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -16687,6 +16737,7 @@ const controlRecipes = async function () {
 };
 const controlSearchResults = async function () {
   try {
+    _resultsView.default.renderSpinner();
     // Get search query from the form
     const query = _searchView.default.getQuery();
     if (!query) return;
@@ -16694,7 +16745,8 @@ const controlSearchResults = async function () {
     // load search results
     const res = await model.loadSearchResult(query);
     // render results
-    console.log(res);
+    console.log(model.state.search.results);
+    _resultsView.default.render(model.state.search.results);
   } catch (err) {
     console.log('err', err);
   }
@@ -16707,7 +16759,7 @@ const init = function () {
   _searchView.default.addHandlerSearch(controlSearchResults);
 };
 init();
-},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

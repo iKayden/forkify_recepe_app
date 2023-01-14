@@ -1102,7 +1102,7 @@ class RecipeView {
   render(data) {
     this.#data = data;
     const html = this.#generateMarkup();
-    this.#clear;
+    this.#clear();
     this.#parentElement.insertAdjacentHTML("afterbegin", html);
   }
   #clear() {
@@ -1173,20 +1173,7 @@ class RecipeView {
       <div class="recipe__ingredients">
         <h2 class="heading--2">Recipe ingredients</h2>
         <ul class="recipe__ingredient-list">
-        ${this.#data.ingredients.map(ing => {
-      return `
-        <li class="recipe__ingredient">
-          <svg class="recipe__icon">
-            <use href="${_icons.default}#icon-check"></use>
-          </svg>
-          <div class="recipe__quantity">${(0, _fracty.default)(ing.quantity)}</div>
-          <div class="recipe__description">
-            <span class="recipe__unit">${ing.unit}</span>
-            ${ing.description}
-          </div>
-        </li>
-      `;
-    }).join("")}
+        ${this.#data.ingredients.map(this.#generateIngredient).join("")}
       </div >
 
   <div class="recipe__directions">
@@ -1208,6 +1195,20 @@ class RecipeView {
     </a>
   </div>;
 `;
+  }
+  #generateIngredient(ing) {
+    return `
+    <li class="recipe__ingredient">
+      <svg class="recipe__icon">
+        <use href="${_icons.default}#icon-check"></use>
+      </svg>
+      <div class="recipe__quantity">${ing.quantity ? (0, _fracty.default)(ing.quantity) : ""}</div>
+      <div class="recipe__description">
+        <span class="recipe__unit">${ing.unit}</span>
+        ${ing.description}
+      </div>
+    </li>
+  `;
   }
 }
 var _default = new RecipeView();

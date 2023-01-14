@@ -887,14 +887,16 @@ try {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TIMEOUT_SEC = exports.API_URL = void 0;
+exports.TIMEOUT_SEC = exports.API_URL = exports.API_KEY = void 0;
 // To store all constants that should be reused across the App
 // Made to make it easier to configure the app
 
-const API_URL = "https://forkify-api.herokuapp.com/api/v2/recipes";
+const API_URL = "https://forkify-api.herokuapp.com/api/v2/recipes/";
 exports.API_URL = API_URL;
 const TIMEOUT_SEC = 10;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
+const API_KEY = "71ae6f3a-7173-4e5d-b9bf-260257cce1c8";
+exports.API_KEY = API_KEY;
 },{}],"src/js/helpers.js":[function(require,module,exports) {
 "use strict";
 
@@ -927,19 +929,23 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.state = exports.loadRecipe = void 0;
+exports.state = exports.loadSearchResult = exports.loadRecipe = void 0;
 var _regeneratorRuntime = require("regenerator-runtime");
 var _config = require("./config.js");
 var _helpers = require("./helpers.js");
 const state = {
-  recipe: {}
+  recipe: {},
+  search: {
+    query: "",
+    results: []
+  }
 };
 
 // Function to change State Recipe Object
 exports.state = state;
 const loadRecipe = async function (id) {
   try {
-    const data = await (0, _helpers.getJSON)(`${_config.API_URL}/${id}`);
+    const data = await (0, _helpers.getJSON)(`${_config.API_URL}${id}`);
     const {
       recipe
     } = data.data;
@@ -959,6 +965,24 @@ const loadRecipe = async function (id) {
   }
 };
 exports.loadRecipe = loadRecipe;
+const loadSearchResult = async function (query) {
+  try {
+    state.search.query = query;
+    const data = await (0, _helpers.getJSON)(`${_config.API_URL}?search=${query}`);
+    state.search.results = data.data.recipes.map(rec => {
+      return {
+        id: rec.id,
+        title: rec.title,
+        publisher: rec.publisher,
+        image: rec.image_url
+      };
+    });
+  } catch (err) {
+    console.error(`${err} 💥💥💥`);
+    throw err;
+  }
+};
+exports.loadSearchResult = loadSearchResult;
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"node_modules/fracty/fracty.js":[function(require,module,exports) {

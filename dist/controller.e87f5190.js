@@ -920,6 +920,7 @@ const getJSON = async function (url) {
     throw error;
   }
 };
+// test;
 exports.getJSON = getJSON;
 },{"./config":"src/js/config.js"}],"src/js/model.js":[function(require,module,exports) {
 "use strict";

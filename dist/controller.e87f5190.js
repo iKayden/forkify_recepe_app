@@ -955,6 +955,7 @@ const loadRecipe = async function (id) {
     };
   } catch (error) {
     console.error(`${error} 💥💥💥`);
+    throw error;
   }
 };
 exports.loadRecipe = loadRecipe;
@@ -1138,6 +1139,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class RecipeView {
   #parentElement = document.querySelector('.recipe');
   #data;
+  #errMsg = "We couldn't find that recipe, please try something else. 🫠";
+  #message = "Great Success!";
   render(data) {
     this.#data = data;
     const html = this.#generateMarkup();
@@ -1147,7 +1150,7 @@ class RecipeView {
   #clear() {
     this.#parentElement.innerHTML = "";
   }
-  renderSpinner = function () {
+  renderSpinner() {
     const spinner = `
     <div class="spinner">
       <svg>
@@ -1157,12 +1160,39 @@ class RecipeView {
     `;
     this.#clear();
     this.#parentElement.insertAdjacentHTML("afterbegin", spinner);
-  };
-
+  }
+  renderError(errMsg = this.#errMsg) {
+    const html = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${errMsg}</p>
+      </div>
+    `;
+    this.#clear();
+    this.#parentElement.insertAdjacentHTML("afterbegin", html);
+  }
+  renderMessage(msg = this.#message) {
+    const html = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-smile"></use>
+          </svg>
+        </div>
+        <p>${msg}</p>
+      </div>
+    `;
+    this.#clear();
+    this.#parentElement.insertAdjacentHTML("afterbegin", html);
+  }
   // PUBLISHER <-> SUBSCRIBER method of event handling delegation
-  // This is a Publish (handler) function
-  addHandlerRender(callBack) {
-    ["hashchange", "load"].forEach(e => window.addEventListener(e, callBack));
+  // This is a Publisher (where you can add a handler/subscriber) function from controller
+  addHandlerRender(handler) {
+    ["hashchange", "load"].forEach(e => window.addEventListener(e, handler));
   }
   #generateMarkup() {
     return `
@@ -16602,7 +16632,7 @@ const controlRecipes = async function () {
     // Rendering Received Data
     _recipeView.default.render(model.state.recipe);
   } catch (error) {
-    console.error(error);
+    _recipeView.default.renderError();
   }
 };
 

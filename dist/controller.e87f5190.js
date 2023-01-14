@@ -997,7 +997,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class View {
   _data;
   render(data) {
+    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
     this._data = data;
+    console.log('data View', data);
     const html = this._generateMarkup();
     this._clear();
     this._parentElement.insertAdjacentHTML("afterbegin", html);
@@ -1272,9 +1274,7 @@ class RecipeView extends _View.default {
         </div>
 
         <div class="recipe__user-generated">
-          <svg>
-            <use href="${_icons.default}#icon-user"></use>
-          </svg>
+
         </div>
         <button class="btn--round">
           <svg class="">
@@ -1364,24 +1364,21 @@ var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class ResultView extends _View.default {
   _parentElement = document.querySelector(".results");
+  _errMsg = "No recipes found for your query! Please, try something else 🥙";
+  _message = "Great Success!";
   _generateMarkup() {
     return this._data.map(this._generateMarkupPreview).join("");
   }
   _generateMarkupPreview(result) {
     return `
     <li class="preview">
-      <a class="preview__link preview__link--active" href="#${result.id}">
+      <a class="preview__link" href="#${result.id}">
         <figure class="preview__fig">
-          <img src="${result.image}" alt="Test" />
+          <img src="${result.image}" alt="${result.title}" />
         </figure>
         <div class="preview__data">
           <h4 class="preview__title">${result.title}</h4>
           <p class="preview__publisher">${result.publisher}</p>
-          <div class="preview__user-generated">
-            <svg>
-              <use href="${_icons.default}#icon-user"></use>
-            </svg>
-          </div>
         </div>
       </a>
     </li>
@@ -16722,6 +16719,11 @@ require("regenerator-runtime");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+// Keeps the state of the app after code has been changed
+if (module.hot) {
+  module.hot.accept();
+}
+
 // https://forkify-api.herokuapp.com/v2
 const controlRecipes = async function () {
   try {
@@ -16746,7 +16748,7 @@ const controlSearchResults = async function () {
     if (!query) return;
 
     // load search results
-    const res = await model.loadSearchResult(query);
+    await model.loadSearchResult(query);
     // render results
     console.log(model.state.search.results);
     _resultsView.default.render(model.state.search.results);

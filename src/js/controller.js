@@ -5,6 +5,11 @@ import resultsView from "./views/resultsView.js";
 import "core-js/stable";
 import "regenerator-runtime";
 
+// Keeps the state of the app after code has been changed
+if (module.hot) {
+  module.hot.accept();
+}
+
 
 // https://forkify-api.herokuapp.com/v2
 const controlRecipes = async function() {
@@ -31,7 +36,7 @@ const controlSearchResults = async function() {
     if (!query) return;
 
     // load search results
-    const res = await model.loadSearchResult(query);
+    await model.loadSearchResult(query);
     // render results
     console.log(model.state.search.results);
     resultsView.render(model.state.search.results);

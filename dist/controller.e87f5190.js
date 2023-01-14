@@ -1360,34 +1360,37 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _View = _interopRequireDefault(require("./View.js"));
+var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class ResultView extends _View.default {
   _parentElement = document.querySelector(".results");
   _generateMarkup() {
-    console.log(this._data);
+    return this._data.map(this._generateMarkupPreview).join("");
+  }
+  _generateMarkupPreview(result) {
     return `
-      <li class="preview">
-        <a class="preview__link preview__link--active" href="#23456">
-          <figure class="preview__fig">
-            <img src="src/img/test-1.jpg" alt="Test" />
-          </figure>
-          <div class="preview__data">
-            <h4 class="preview__title">Pasta with Tomato Cream ...</h4>
-            <p class="preview__publisher">The Pioneer Woman</p>
-            <div class="preview__user-generated">
-              <svg>
-                <use href="src/img/icons.svg#icon-user"></use>
-              </svg>
-            </div>
+    <li class="preview">
+      <a class="preview__link preview__link--active" href="#${result.id}">
+        <figure class="preview__fig">
+          <img src="${result.image}" alt="Test" />
+        </figure>
+        <div class="preview__data">
+          <h4 class="preview__title">${result.title}</h4>
+          <p class="preview__publisher">${result.publisher}</p>
+          <div class="preview__user-generated">
+            <svg>
+              <use href="${_icons.default}#icon-user"></use>
+            </svg>
           </div>
-        </a>
-      </li>
-    `;
+        </div>
+      </a>
+    </li>
+  `;
   }
 }
 var _default = new ResultView();
 exports.default = _default;
-},{"./View.js":"src/js/views/View.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
 var check = function (it) {
   return it && it.Math == Math && it;

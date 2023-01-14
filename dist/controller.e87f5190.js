@@ -1312,7 +1312,33 @@ class RecipeView {
 }
 var _default = new RecipeView();
 exports.default = _default;
-},{"../../img/icons.svg":"src/img/icons.svg","fracty":"node_modules/fracty/fracty.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
+},{"../../img/icons.svg":"src/img/icons.svg","fracty":"node_modules/fracty/fracty.js"}],"src/js/views/searchView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+class SearchView {
+  #parentElement = document.querySelector(".search");
+  getQuery() {
+    const query = this.#parentElement.querySelector(".search__field").value;
+    this.#clearInput();
+    return query;
+  }
+  #clearInput() {
+    this.#parentElement.querySelector(".search__field").value = "";
+  }
+  addHandlerSearch(handler) {
+    this.#parentElement.addEventListener("submit", function (e) {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+var _default = new SearchView();
+exports.default = _default;
+},{}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
 var check = function (it) {
   return it && it.Math == Math && it;
@@ -16637,6 +16663,7 @@ module.exports = require('../internals/path');
 
 var model = _interopRequireWildcard(require("./model.js"));
 var _recipeView = _interopRequireDefault(require("./views/recipeView.js"));
+var _searchView = _interopRequireDefault(require("./views/searchView.js"));
 require("core-js/stable");
 require("regenerator-runtime");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -16652,11 +16679,24 @@ const controlRecipes = async function () {
     _recipeView.default.renderSpinner();
     // Loading and storing current data in a state
     await model.loadRecipe(id);
-
     // Rendering Received Data
     _recipeView.default.render(model.state.recipe);
   } catch (error) {
     _recipeView.default.renderError();
+  }
+};
+const controlSearchResults = async function () {
+  try {
+    // Get search query from the form
+    const query = _searchView.default.getQuery();
+    if (!query) return;
+
+    // load search results
+    const res = await model.loadSearchResult(query);
+    // render results
+    console.log(res);
+  } catch (err) {
+    console.log('err', err);
   }
 };
 
@@ -16664,8 +16704,10 @@ const controlRecipes = async function () {
 // This is a Subscriber function
 const init = function () {
   _recipeView.default.addHandlerRender(controlRecipes);
-}();
-},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+  _searchView.default.addHandlerSearch(controlSearchResults);
+};
+init();
+},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

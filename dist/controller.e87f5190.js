@@ -887,7 +887,7 @@ try {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TIMEOUT_SEC = exports.API_URL = exports.API_KEY = void 0;
+exports.TIMEOUT_SEC = exports.RES_PER_PAGE = exports.API_URL = exports.API_KEY = void 0;
 // To store all constants that should be reused across the App
 // Made to make it easier to configure the app
 
@@ -897,6 +897,8 @@ const TIMEOUT_SEC = 10;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
 const API_KEY = "71ae6f3a-7173-4e5d-b9bf-260257cce1c8";
 exports.API_KEY = API_KEY;
+const RES_PER_PAGE = 10;
+exports.RES_PER_PAGE = RES_PER_PAGE;
 },{}],"src/js/helpers.js":[function(require,module,exports) {
 "use strict";
 
@@ -929,7 +931,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.state = exports.loadSearchResult = exports.loadRecipe = void 0;
+exports.state = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = void 0;
 var _regeneratorRuntime = require("regenerator-runtime");
 var _config = require("./config.js");
 var _helpers = require("./helpers.js");
@@ -937,7 +939,8 @@ const state = {
   recipe: {},
   search: {
     query: "",
-    results: []
+    results: [],
+    resultsPerPage: _config.RES_PER_PAGE
   }
 };
 
@@ -983,6 +986,12 @@ const loadSearchResult = async function (query) {
   }
 };
 exports.loadSearchResult = loadSearchResult;
+const getSearchResultsPage = function (page) {
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+  return state.search.results.slice(start, end);
+};
+exports.getSearchResultsPage = getSearchResultsPage;
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -999,7 +1008,6 @@ class View {
   render(data) {
     if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
     this._data = data;
-    console.log('data View', data);
     const html = this._generateMarkup();
     this._clear();
     this._parentElement.insertAdjacentHTML("afterbegin", html);
@@ -16750,8 +16758,7 @@ const controlSearchResults = async function () {
     // load search results
     await model.loadSearchResult(query);
     // render results
-    console.log(model.state.search.results);
-    _resultsView.default.render(model.state.search.results);
+    _resultsView.default.render(model.getSearchResultsPage(1));
   } catch (err) {
     console.log('err', err);
   }

@@ -28,6 +28,12 @@ class RecipeView {
     this.#parentElement.insertAdjacentHTML("afterbegin", spinner);
   };
 
+  // PUBLISHER <-> SUBSCRIBER method of event handling delegation
+  // This is a Publish (handler) function
+  addHandlerRender(callBack) {
+    ["hashchange", "load"].forEach(e => window.addEventListener(e, callBack));
+  }
+
   #generateMarkup() {
     return `
       <figure class="recipe__fig">

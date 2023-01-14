@@ -1158,6 +1158,12 @@ class RecipeView {
     this.#clear();
     this.#parentElement.insertAdjacentHTML("afterbegin", spinner);
   };
+
+  // PUBLISHER <-> SUBSCRIBER method of event handling delegation
+  // This is a Publish (handler) function
+  addHandlerRender(callBack) {
+    ["hashchange", "load"].forEach(e => window.addEventListener(e, callBack));
+  }
   #generateMarkup() {
     return `
       <figure class="recipe__fig">
@@ -16600,9 +16606,11 @@ const controlRecipes = async function () {
   }
 };
 
-// window.addEventListener("hashchange", showRecipe);
-// window.addEventListener("load", showRecipe);
-["hashchange", "load"].forEach(e => window.addEventListener(e, controlRecipes));
+// Publisher <-> Subscriber pattern
+// This is a Subscriber function
+const init = function () {
+  _recipeView.default.addHandlerRender(controlRecipes);
+}();
 },{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

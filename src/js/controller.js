@@ -7,7 +7,6 @@ import "regenerator-runtime";
 // https://forkify-api.herokuapp.com/v2
 const controlRecipes = async function() {
   try {
-
     // GETting data
     const id = window.location.hash.slice(1);
     if (!id) return;
@@ -23,6 +22,8 @@ const controlRecipes = async function() {
   }
 };
 
-// window.addEventListener("hashchange", showRecipe);
-// window.addEventListener("load", showRecipe);
-["hashchange", "load"].forEach(e => window.addEventListener(e, controlRecipes));
+// Publisher <-> Subscriber pattern
+// This is a Subscriber function
+const init = function() {
+  recipeView.addHandlerRender(controlRecipes);
+}();

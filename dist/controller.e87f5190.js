@@ -940,6 +940,7 @@ const state = {
   search: {
     query: "",
     results: [],
+    page: 1,
     resultsPerPage: _config.RES_PER_PAGE
   }
 };
@@ -986,7 +987,8 @@ const loadSearchResult = async function (query) {
   }
 };
 exports.loadSearchResult = loadSearchResult;
-const getSearchResultsPage = function (page) {
+const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page;
   const start = (page - 1) * state.search.resultsPerPage;
   const end = page * state.search.resultsPerPage;
   return state.search.results.slice(start, end);
@@ -1394,6 +1396,63 @@ class ResultView extends _View.default {
   }
 }
 var _default = new ResultView();
+exports.default = _default;
+},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"src/js/views/paginationView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _View = _interopRequireDefault(require("./View.js"));
+var _icons = _interopRequireDefault(require("../../img/icons.svg"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+class PaginationView extends _View.default {
+  _parentElement = document.querySelector(".pagination");
+  _generateMarkup() {
+    const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
+    if (this._data.page === 1 && numPages > 1) {
+      // First Page
+      return `
+      <button class="btn--inline pagination__btn--next">
+      <span>Page ${this._data.page + 1}</span>
+      <svg class="search__icon">
+        <use href="${_icons.default}#icon-arrow-right"></use>
+      </svg>
+    </button>
+      `;
+    }
+    if (this._data.page === numPages && numPages > 1) {
+      // Last Page
+      return `
+      <button class="btn--inline pagination__btn--prev">
+        <svg class="search__icon">
+          <use href="${_icons.default}#icon-arrow-left"></use>
+        </svg>
+        <span>Page ${this._data.page - 1}</span>
+      </button>
+      `;
+    }
+    if (this._data.page < numPages) {
+      // Any Other Page
+      return `
+      <button class="btn--inline pagination__btn--prev">
+        <svg class="search__icon">
+          <use href="${_icons.default}#icon-arrow-left"></use>
+        </svg>
+        <span>Page ${this._data.page - 1}</span>
+      </button>
+      <button class="btn--inline pagination__btn--next">
+        <span>Page ${this._data.page + 1}</span>
+        <svg class="search__icon">
+          <use href="${_icons.default}#icon-arrow-right"></use>
+        </svg>
+      </button>
+    `;
+    }
+  }
+}
+var _default = new PaginationView();
 exports.default = _default;
 },{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -16722,15 +16781,16 @@ var model = _interopRequireWildcard(require("./model.js"));
 var _recipeView = _interopRequireDefault(require("./views/recipeView.js"));
 var _searchView = _interopRequireDefault(require("./views/searchView.js"));
 var _resultsView = _interopRequireDefault(require("./views/resultsView.js"));
+var _paginationView = _interopRequireDefault(require("./views/paginationView.js"));
 require("core-js/stable");
 require("regenerator-runtime");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 // Keeps the state of the app after code has been changed
-if (module.hot) {
-  module.hot.accept();
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 // https://forkify-api.herokuapp.com/v2
 const controlRecipes = async function () {
@@ -16758,7 +16818,9 @@ const controlSearchResults = async function () {
     // load search results
     await model.loadSearchResult(query);
     // render results
-    _resultsView.default.render(model.getSearchResultsPage(1));
+    _resultsView.default.render(model.getSearchResultsPage(2));
+    // render initial pagination btns
+    _paginationView.default.render(model.state.search);
   } catch (err) {
     console.log('err', err);
   }
@@ -16771,7 +16833,7 @@ const init = function () {
   _searchView.default.addHandlerSearch(controlSearchResults);
 };
 init();
-},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

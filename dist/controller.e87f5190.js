@@ -238,7 +238,7 @@ const updateServings = function (newServings) {
   return state.recipe.servings = newServings;
 };
 
-// My github dates commit is broken, test to fix it
+// My github dates commit is broken, test to fix it attempt number two
 exports.updateServings = updateServings;
 },{"./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";

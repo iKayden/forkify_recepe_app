@@ -897,7 +897,7 @@ const TIMEOUT_SEC = 10;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
 const API_KEY = "71ae6f3a-7173-4e5d-b9bf-260257cce1c8";
 exports.API_KEY = API_KEY;
-const RES_PER_PAGE = 10;
+const RES_PER_PAGE = 13;
 exports.RES_PER_PAGE = RES_PER_PAGE;
 },{}],"src/js/helpers.js":[function(require,module,exports) {
 "use strict";

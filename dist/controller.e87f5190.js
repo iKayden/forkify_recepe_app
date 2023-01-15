@@ -931,7 +931,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.state = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = void 0;
+exports.updateServings = exports.state = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = void 0;
 var _regeneratorRuntime = require("regenerator-runtime");
 var _config = require("./config.js");
 var _helpers = require("./helpers.js");
@@ -994,6 +994,14 @@ const getSearchResultsPage = function (page = state.search.page) {
   return state.search.results.slice(start, end);
 };
 exports.getSearchResultsPage = getSearchResultsPage;
+const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    // newQt = oldQt * newServings / oldServings
+    ing.quantity = ing.quantity * newServings / state.recipe.servings;
+  });
+  return state.recipe.servings = newServings;
+};
+exports.updateServings = updateServings;
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -1244,6 +1252,18 @@ class RecipeView extends _View.default {
   addHandlerRender(handler) {
     ["hashchange", "load"].forEach(e => window.addEventListener(e, handler));
   }
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener("click", function (e) {
+      const btn = e.target.closest(".btn--update-servings");
+      if (!btn) return;
+      const {
+        updateTo
+      } = btn.dataset; // data-update-to
+      if (+updateTo > 0) handler(+updateTo);
+      // need to use data html properties to connect this function to the code
+    });
+  }
+
   _generateMarkup() {
     return `
       <figure class="recipe__fig">
@@ -1270,12 +1290,12 @@ class RecipeView extends _View.default {
           <span class="recipe__info-text">Servings</span>
 
           <div class="recipe__info-buttons">
-            <button class="btn--tiny btn--increase-servings">
+            <button data-update-to="${this._data.servings - 1}" class="btn--tiny btn--update-servings">
               <svg>
                 <use href="${_icons.default}#icon-minus-circle"></use>
               </svg>
             </button>
-            <button class="btn--tiny btn--increase-servings">
+            <button data-update-to="${this._data.servings + 1}" class="btn--tiny btn--update-servings">
               <svg>
                 <use href="${_icons.default}#icon-plus-circle"></use>
               </svg>
@@ -16841,11 +16861,18 @@ const controlPagination = function (goToPage) {
   // render new pagination btns
   _paginationView.default.render(model.state.search);
 };
+const controlServings = function (newServings) {
+  // Update the recipe servings state
+  model.updateServings(newServings);
+  // Update the recipe view
+  _recipeView.default.render(model.state.recipe);
+};
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
 const init = function () {
   _recipeView.default.addHandlerRender(controlRecipes);
+  _recipeView.default.addHandlerUpdateServings(controlServings);
   _searchView.default.addHandlerSearch(controlSearchResults);
   _paginationView.default.addHandlerClick(controlPagination);
 };

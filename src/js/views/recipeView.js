@@ -13,6 +13,16 @@ class RecipeView extends View {
     ["hashchange", "load"].forEach(e => window.addEventListener(e, handler));
   }
 
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener("click", function(e) {
+      const btn = e.target.closest(".btn--update-servings");
+      if (!btn) return;
+      const { updateTo } = btn.dataset; // data-update-to
+      if (+updateTo > 0) handler(+updateTo);
+      // need to use data html properties to connect this function to the code
+    });
+  }
+
   _generateMarkup() {
     return `
       <figure class="recipe__fig">
@@ -39,12 +49,12 @@ class RecipeView extends View {
           <span class="recipe__info-text">Servings</span>
 
           <div class="recipe__info-buttons">
-            <button class="btn--tiny btn--increase-servings">
+            <button data-update-to="${this._data.servings - 1}" class="btn--tiny btn--update-servings">
               <svg>
                 <use href="${icons}#icon-minus-circle"></use>
               </svg>
             </button>
-            <button class="btn--tiny btn--increase-servings">
+            <button data-update-to="${this._data.servings + 1}" class="btn--tiny btn--update-servings">
               <svg>
                 <use href="${icons}#icon-plus-circle"></use>
               </svg>

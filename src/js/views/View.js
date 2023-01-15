@@ -16,8 +16,21 @@ export default class View {
     const newHtml = this._generateMarkup();
     // Converts html to real DOM object (virtual DOM in memory)
     const newDOM = document.createRange().createContextualFragment(newHtml);
-    const newElements = newDOM.querySelectorAll("*");
-    console.log("newElements", newElements);
+    // WIll be used to compare real DOM and this Virtual DOM and find differences and update them in case of any
+    const newElements = Array.from(newDOM.querySelectorAll("*"));
+    const currElements = Array.from(this._parentElement.querySelectorAll("*"));
+    newElements.forEach((newEl, i) => {
+      // Creates an inside loop
+      const currEl = currElements[i];
+      // Update TEXT
+      if (!newEl.isEqualNode(currEl) && newEl.firstChild?.nodeValue.trim() !== "") {
+        currEl.textContent = newEl.textContent;
+      }
+      // Update attributes
+      if (!newEl.isEqualNode(currEl)) {
+        Array.from(newEl.attributes).forEach(att => currEl.setAttribute(att.name, att.value));
+      }
+    });
   }
 
   _clear() {

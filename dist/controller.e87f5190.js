@@ -1422,9 +1422,10 @@ class ResultView extends _View.default {
     return this._data.map(this._generateMarkupPreview).join("");
   }
   _generateMarkupPreview(result) {
+    const id = window.location.hash.slice(1);
     return `
     <li class="preview">
-      <a class="preview__link" href="#${result.id}">
+      <a class="preview__link ${result.id === id ? "preview__link--active" : ""}" href = "#${result.id}" >
         <figure class="preview__fig">
           <img src="${result.image}" alt="${result.title}" />
         </figure>
@@ -1432,13 +1433,14 @@ class ResultView extends _View.default {
           <h4 class="preview__title">${result.title}</h4>
           <p class="preview__publisher">${result.publisher}</p>
         </div>
-      </a>
-    </li>
-  `;
+      </a >
+    </li >
+      `;
   }
 }
 var _default = new ResultView();
 exports.default = _default;
+;
 },{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"src/js/views/paginationView.js":[function(require,module,exports) {
 "use strict";
 
@@ -16852,6 +16854,8 @@ const controlRecipes = async function () {
     if (!id) return;
     // Loading data
     _recipeView.default.renderSpinner();
+    _resultsView.default.update(model.getSearchResultsPage());
+
     // Loading and storing current data in a state
     await model.loadRecipe(id);
     // Rendering Received Data
@@ -16887,7 +16891,6 @@ const controlServings = function (newServings) {
   // Update the recipe servings state
   model.updateServings(newServings);
   // Update the recipe view
-  // recipeView.render(model.state.recipe);
   _recipeView.default.update(model.state.recipe);
 };
 

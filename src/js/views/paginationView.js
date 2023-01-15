@@ -3,6 +3,13 @@ import icons from "../../img/icons.svg";
 class PaginationView extends View {
   _parentElement = document.querySelector(".pagination");
 
+  addHandlerClick(handler) {
+    this._parentElement.addEventListener("click", function(e) {
+      const btn = e.target.closest("btn--inline"); // Goes up the DOM and finds the element
+      console.log('btn');
+      handler();
+    });
+  }
   _generateMarkup() {
     const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
 
@@ -44,7 +51,7 @@ class PaginationView extends View {
       </button>
     `;
     }
+    return "";
   }
-
 }
 export default new PaginationView();

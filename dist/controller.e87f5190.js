@@ -1409,6 +1409,13 @@ var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class PaginationView extends _View.default {
   _parentElement = document.querySelector(".pagination");
+  addHandlerClick(handler) {
+    this._parentElement.addEventListener("click", function (e) {
+      const btn = e.target.closest("btn--inline"); // Goes up the DOM and finds the element
+      console.log('btn');
+      handler();
+    });
+  }
   _generateMarkup() {
     const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
     if (this._data.page === 1 && numPages > 1) {
@@ -1450,6 +1457,7 @@ class PaginationView extends _View.default {
       </button>
     `;
     }
+    return "";
   }
 }
 var _default = new PaginationView();
@@ -16818,19 +16826,21 @@ const controlSearchResults = async function () {
     // load search results
     await model.loadSearchResult(query);
     // render results
-    _resultsView.default.render(model.getSearchResultsPage(2));
+    _resultsView.default.render(model.getSearchResultsPage(3));
     // render initial pagination btns
     _paginationView.default.render(model.state.search);
   } catch (err) {
     console.log('err', err);
   }
 };
+const controlPagination = function () {};
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
 const init = function () {
   _recipeView.default.addHandlerRender(controlRecipes);
   _searchView.default.addHandlerSearch(controlSearchResults);
+  _paginationView.default.addHandlerClick(controlPagination);
 };
 init();
 },{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {

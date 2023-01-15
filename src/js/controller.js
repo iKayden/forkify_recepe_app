@@ -39,7 +39,7 @@ const controlSearchResults = async function() {
     // load search results
     await model.loadSearchResult(query);
     // render results
-    resultsView.render(model.getSearchResultsPage(2));
+    resultsView.render(model.getSearchResultsPage(3));
     // render initial pagination btns
     paginationView.render(model.state.search);
   } catch (err) {
@@ -47,10 +47,15 @@ const controlSearchResults = async function() {
   }
 };
 
+const controlPagination = function() {
+
+};
+
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
 const init = function() {
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controlPagination);
 };
 init();

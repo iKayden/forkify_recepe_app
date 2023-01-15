@@ -39,7 +39,7 @@ const controlSearchResults = async function() {
     // load search results
     await model.loadSearchResult(query);
     // render results
-    resultsView.render(model.getSearchResultsPage(3));
+    resultsView.render(model.getSearchResultsPage(1));
     // render initial pagination btns
     paginationView.render(model.state.search);
   } catch (err) {
@@ -47,8 +47,11 @@ const controlSearchResults = async function() {
   }
 };
 
-const controlPagination = function() {
-
+const controlPagination = function(goToPage) {
+  // render new results
+  resultsView.render(model.getSearchResultsPage(goToPage));
+  // render new pagination btns
+  paginationView.render(model.state.search);
 };
 
 // Publisher <-> Subscriber pattern

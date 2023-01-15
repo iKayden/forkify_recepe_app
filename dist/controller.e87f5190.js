@@ -1411,46 +1411,48 @@ class PaginationView extends _View.default {
   _parentElement = document.querySelector(".pagination");
   addHandlerClick(handler) {
     this._parentElement.addEventListener("click", function (e) {
-      const btn = e.target.closest("btn--inline"); // Goes up the DOM and finds the element
-      console.log('btn');
-      handler();
+      const btn = e.target.closest(".btn--inline"); // Goes up the DOM and finds the element
+      if (!btn) return;
+      const goToPage = +btn.dataset.goto;
+      handler(goToPage);
     });
   }
   _generateMarkup() {
     const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
-    if (this._data.page === 1 && numPages > 1) {
+    const currentPage = this._data.page;
+    if (currentPage === 1 && numPages > 1) {
       // First Page
       return `
-      <button class="btn--inline pagination__btn--next">
-      <span>Page ${this._data.page + 1}</span>
+      <button data-goto="${currentPage + 1}" class="btn--inline pagination__btn--next">
+      <span>Page ${currentPage + 1}</span>
       <svg class="search__icon">
         <use href="${_icons.default}#icon-arrow-right"></use>
       </svg>
     </button>
       `;
     }
-    if (this._data.page === numPages && numPages > 1) {
+    if (currentPage === numPages && numPages > 1) {
       // Last Page
       return `
-      <button class="btn--inline pagination__btn--prev">
+      <button data-goto="${currentPage - 1}" class="btn--inline pagination__btn--prev">
         <svg class="search__icon">
           <use href="${_icons.default}#icon-arrow-left"></use>
         </svg>
-        <span>Page ${this._data.page - 1}</span>
+        <span>Page ${currentPage - 1}</span>
       </button>
       `;
     }
-    if (this._data.page < numPages) {
+    if (currentPage < numPages) {
       // Any Other Page
       return `
-      <button class="btn--inline pagination__btn--prev">
+      <button data-goto="${currentPage - 1}" class="btn--inline pagination__btn--prev">
         <svg class="search__icon">
           <use href="${_icons.default}#icon-arrow-left"></use>
         </svg>
-        <span>Page ${this._data.page - 1}</span>
+        <span>Page ${currentPage - 1}</span>
       </button>
-      <button class="btn--inline pagination__btn--next">
-        <span>Page ${this._data.page + 1}</span>
+      <button data-goto="${currentPage + 1}" class="btn--inline pagination__btn--next">
+        <span>Page ${currentPage + 1}</span>
         <svg class="search__icon">
           <use href="${_icons.default}#icon-arrow-right"></use>
         </svg>
@@ -16826,14 +16828,19 @@ const controlSearchResults = async function () {
     // load search results
     await model.loadSearchResult(query);
     // render results
-    _resultsView.default.render(model.getSearchResultsPage(3));
+    _resultsView.default.render(model.getSearchResultsPage(1));
     // render initial pagination btns
     _paginationView.default.render(model.state.search);
   } catch (err) {
     console.log('err', err);
   }
 };
-const controlPagination = function () {};
+const controlPagination = function (goToPage) {
+  // render new results
+  _resultsView.default.render(model.getSearchResultsPage(goToPage));
+  // render new pagination btns
+  _paginationView.default.render(model.state.search);
+};
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
@@ -16868,7 +16875,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46161" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33601" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

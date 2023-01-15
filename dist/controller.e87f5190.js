@@ -1022,6 +1022,15 @@ class View {
     this._clear();
     this._parentElement.insertAdjacentHTML("afterbegin", html);
   }
+  update(data) {
+    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+    this._data = data;
+    const newHtml = this._generateMarkup();
+    // Converts html to real DOM object (virtual DOM in memory)
+    const newDOM = document.createRange().createContextualFragment(newHtml);
+    const newElements = newDOM.querySelectorAll("*");
+    console.log("newElements", newElements);
+  }
   _clear() {
     this._parentElement.innerHTML = "";
   }
@@ -16865,7 +16874,8 @@ const controlServings = function (newServings) {
   // Update the recipe servings state
   model.updateServings(newServings);
   // Update the recipe view
-  _recipeView.default.render(model.state.recipe);
+  // recipeView.render(model.state.recipe);
+  _recipeView.default.update(model.state.recipe);
 };
 
 // Publisher <-> Subscriber pattern

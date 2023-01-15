@@ -1023,7 +1023,6 @@ class View {
     this._parentElement.insertAdjacentHTML("afterbegin", html);
   }
   update(data) {
-    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
     this._data = data;
     const newHtml = this._generateMarkup();
     // Converts html to real DOM object (virtual DOM in memory)

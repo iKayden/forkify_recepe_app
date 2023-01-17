@@ -167,7 +167,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateServings = exports.state = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = void 0;
+exports.updateServings = exports.state = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = exports.addBookmark = void 0;
 var _config = require("./config.js");
 var _helpers = require("./helpers.js");
 const state = {
@@ -177,7 +177,8 @@ const state = {
     results: [],
     page: 1,
     resultsPerPage: _config.RES_PER_PAGE
-  }
+  },
+  bookmarks: []
 };
 
 // Function to change State Recipe Object
@@ -237,9 +238,13 @@ const updateServings = function (newServings) {
   });
   return state.recipe.servings = newServings;
 };
-
-// My github dates commit is broken, test to fix it attempt number three. Keep trying
 exports.updateServings = updateServings;
+const addBookmark = function (recipe) {
+  state.bookmarks.push(recipe);
+  // Mark current recipe as bookmarked
+  if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+};
+exports.addBookmark = addBookmark;
 },{"./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -523,6 +528,13 @@ class RecipeView extends _View.default {
     });
   }
 
+  addHandlerAddBookmark(handler) {
+    this._parentElement.addEventListener("click", function (e) {
+      const btn = e.target.closest(".btn--bookmark");
+      if (!btn) return;
+      handler();
+    });
+  }
   _generateMarkup() {
     return `
       <figure class="recipe__fig">
@@ -565,9 +577,9 @@ class RecipeView extends _View.default {
         <div class="recipe__user-generated">
 
         </div>
-        <button class="btn--round">
+        <button class="btn--round btn--bookmark">
           <svg class="">
-            <use href="${_icons.default}#icon-bookmark-fill"></use>
+            <use href="${_icons.default}#icon-bookmark"></use>
           </svg>
         </button>
       </div>
@@ -16894,6 +16906,9 @@ const controlServings = function (newServings) {
   // Update the recipe view
   _recipeView.default.update(model.state.recipe);
 };
+const controlAddBookmark = function () {
+  model.addBookmark(model.state.recipe);
+};
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
@@ -16902,6 +16917,7 @@ const init = function () {
   _recipeView.default.addHandlerUpdateServings(controlServings);
   _searchView.default.addHandlerSearch(controlSearchResults);
   _paginationView.default.addHandlerClick(controlPagination);
+  _recipeView.default.addHandlerAddBookmark(controlAddBookmark);
 };
 init();
 },{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {

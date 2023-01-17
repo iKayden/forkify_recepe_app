@@ -8,7 +8,8 @@ export const state = {
     results: [],
     page: 1,
     resultsPerPage: RES_PER_PAGE
-  }
+  },
+  bookmarks: [],
 };
 
 // Function to change State Recipe Object
@@ -69,4 +70,8 @@ export const updateServings = function(newServings) {
   return state.recipe.servings = newServings;
 };
 
-// My github dates commit is broken, test to fix it attempt number three. Keep trying
+export const addBookmark = function(recipe) {
+  state.bookmarks.push(recipe);
+  // Mark current recipe as bookmarked
+  if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+};

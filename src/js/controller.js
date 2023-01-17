@@ -63,6 +63,10 @@ const controlServings = function(newServings) {
   recipeView.update(model.state.recipe);
 };
 
+const controlAddBookmark = function() {
+  model.addBookmark(model.state.recipe);
+};
+
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
 const init = function() {
@@ -70,5 +74,6 @@ const init = function() {
   recipeView.addHandlerUpdateServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
+  recipeView.addHandlerAddBookmark(controlAddBookmark);
 };
 init();

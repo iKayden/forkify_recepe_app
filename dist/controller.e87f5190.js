@@ -199,6 +199,12 @@ const loadRecipe = async function (id) {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients
     };
+    // assigns all recipes with "bookmarked" value and checks if any already marked
+    if (state.bookmarks.some(bookmark => bookmark.id === id)) {
+      state.recipe.bookmarked = true;
+    } else {
+      state.recipe.bookmarked = false;
+    }
   } catch (error) {
     console.error(`${error} 💥💥💥`);
     throw error;

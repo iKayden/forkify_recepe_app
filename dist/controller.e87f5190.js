@@ -579,7 +579,7 @@ class RecipeView extends _View.default {
         </div>
         <button class="btn--round btn--bookmark">
           <svg class="">
-            <use href="${_icons.default}#icon-bookmark"></use>
+            <use href="${_icons.default}#icon-bookmark${this._data.bookmarked ? "-fill" : ""}"></use>
           </svg>
         </button>
       </div>
@@ -16908,6 +16908,7 @@ const controlServings = function (newServings) {
 };
 const controlAddBookmark = function () {
   model.addBookmark(model.state.recipe);
+  _recipeView.default.update(model.state.recipe);
 };
 
 // Publisher <-> Subscriber pattern

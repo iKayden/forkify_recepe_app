@@ -167,7 +167,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateServings = exports.state = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = exports.addBookmark = void 0;
+exports.updateServings = exports.state = exports.removeBookmark = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = exports.addBookmark = void 0;
 var _config = require("./config.js");
 var _helpers = require("./helpers.js");
 const state = {
@@ -251,6 +251,13 @@ const addBookmark = function (recipe) {
   if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
 };
 exports.addBookmark = addBookmark;
+const removeBookmark = function (id) {
+  const i = state.bookmarks.findIndex(el => el.id === id);
+  state.bookmarks.splice(i, 1);
+  // Mark current recipe as bookmarked
+  if (id === state.recipe.id) state.recipe.bookmarked = false;
+};
+exports.removeBookmark = removeBookmark;
 },{"./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -16913,7 +16920,13 @@ const controlServings = function (newServings) {
   _recipeView.default.update(model.state.recipe);
 };
 const controlAddBookmark = function () {
-  model.addBookmark(model.state.recipe);
+  if (model.state.recipe.bookmarked) {
+    model.removeBookmark(model.state.recipe.id);
+    console.log('remove');
+  } else {
+    model.addBookmark(model.state.recipe);
+    console.log('add');
+  }
   _recipeView.default.update(model.state.recipe);
 };
 

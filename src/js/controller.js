@@ -22,6 +22,7 @@ const controlRecipes = async function() {
     // Loading data
     recipeView.renderSpinner();
     resultsView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
 
     // Loading and storing current data in a state
     await model.loadRecipe(id);

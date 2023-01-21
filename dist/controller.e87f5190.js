@@ -271,10 +271,11 @@ var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class View {
   _data;
-  render(data) {
+  render(data, render = true) {
     if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
     this._data = data;
     const html = this._generateMarkup();
+    if (!render) return html;
     this._clear();
     this._parentElement.insertAdjacentHTML("afterbegin", html);
   }
@@ -666,7 +667,7 @@ class SearchView {
 }
 var _default = new SearchView();
 exports.default = _default;
-},{}],"src/js/views/resultsView.js":[function(require,module,exports) {
+},{}],"src/js/views/previewView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -675,34 +676,50 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _View = _interopRequireDefault(require("./View.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-class ResultView extends _View.default {
-  _parentElement = document.querySelector(".results");
-  _errMsg = "No recipes found for your query! Please, try something else 🥙";
-  _message = "Great Success!";
+class PreviewView extends _View.default {
+  _parentElement = "";
   _generateMarkup() {
-    return this._data.map(this._generateMarkupPreview).join("");
-  }
-  _generateMarkupPreview(result) {
     const id = window.location.hash.slice(1);
     return `
     <li class="preview">
-      <a class="preview__link ${result.id === id ? "preview__link--active" : ""}" href = "#${result.id}" >
+      <a class="preview__link ${this._data.id === id ? "preview__link--active" : ""}" href = "#${this._data.id}" >
         <figure class="preview__fig">
-          <img src="${result.image}" alt="${result.title}" />
+          <img src="${this._data.image}" alt="${this._data.title}" />
         </figure>
         <div class="preview__data">
-          <h4 class="preview__title">${result.title}</h4>
-          <p class="preview__publisher">${result.publisher}</p>
+          <h4 class="preview__title">${this._data.title}</h4>
+          <p class="preview__publisher">${this._data.publisher}</p>
         </div>
       </a >
     </li >
       `;
   }
 }
+var _default = new PreviewView();
+exports.default = _default;
+;
+},{"./View.js":"src/js/views/View.js"}],"src/js/views/resultsView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _View = _interopRequireDefault(require("./View.js"));
+var _previewView = _interopRequireDefault(require("./previewView.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+class ResultView extends _View.default {
+  _parentElement = document.querySelector(".results");
+  _errMsg = "No recipes found for your query! Please, try something else 🥙";
+  _message = "Great Success!";
+  _generateMarkup() {
+    return this._data.map(result => _previewView.default.render(result, false)).join("");
+  }
+}
 var _default = new ResultView();
 exports.default = _default;
 ;
-},{"./View.js":"src/js/views/View.js"}],"src/js/views/paginationView.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js","./previewView.js":"src/js/views/previewView.js"}],"src/js/views/paginationView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -777,35 +794,20 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _View = _interopRequireDefault(require("./View.js"));
+var _previewView = _interopRequireDefault(require("./previewView.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class BookmarksView extends _View.default {
   _parentElement = document.querySelector(".bookmarks__list");
   _errMsg = "No bookmarks yet. Find a nice recipe and bookmark it ✅";
   _message = "Great Success!";
   _generateMarkup() {
-    return this._data.map(this._generateMarkupPreview).join("");
-  }
-  _generateMarkupPreview(result) {
-    const id = window.location.hash.slice(1);
-    return `
-    <li class="preview">
-      <a class="preview__link ${result.id === id ? "preview__link--active" : ""}" href = "#${result.id}" >
-        <figure class="preview__fig">
-          <img src="${result.image}" alt="${result.title}" />
-        </figure>
-        <div class="preview__data">
-          <h4 class="preview__title">${result.title}</h4>
-          <p class="preview__publisher">${result.publisher}</p>
-        </div>
-      </a >
-    </li >
-      `;
+    return this._data.map(bookmark => _previewView.default.render(bookmark, false)).join("");
   }
 }
 var _default = new BookmarksView();
 exports.default = _default;
 ;
-},{"./View.js":"src/js/views/View.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js","./previewView.js":"src/js/views/previewView.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
 var check = function (it) {
   return it && it.Math == Math && it;
@@ -16917,6 +16919,7 @@ const controlRecipes = async function () {
     // Loading data
     _recipeView.default.renderSpinner();
     _resultsView.default.update(model.getSearchResultsPage());
+    _bookmarksView.default.update(model.state.bookmarks);
 
     // Loading and storing current data in a state
     await model.loadRecipe(id);

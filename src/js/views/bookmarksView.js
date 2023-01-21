@@ -1,7 +1,7 @@
 import View from "./View.js";
-class ResultView extends View {
-  _parentElement = document.querySelector(".results");
-  _errMsg = "No recipes found for your query! Please, try something else 🥙";
+class BookmarksView extends View {
+  _parentElement = document.querySelector(".bookmarks__list");
+  _errMsg = "No bookmarks yet. Find a nice recipe and bookmark it ✅";
   _message = "Great Success!";
 
 
@@ -27,4 +27,4 @@ class ResultView extends View {
   }
 
 }
-export default new ResultView();;
+export default new BookmarksView();;

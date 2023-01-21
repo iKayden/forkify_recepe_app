@@ -674,7 +674,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _View = _interopRequireDefault(require("./View.js"));
-var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class ResultView extends _View.default {
   _parentElement = document.querySelector(".results");
@@ -703,7 +702,7 @@ class ResultView extends _View.default {
 var _default = new ResultView();
 exports.default = _default;
 ;
-},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"src/js/views/paginationView.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js"}],"src/js/views/paginationView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -770,7 +769,43 @@ class PaginationView extends _View.default {
 }
 var _default = new PaginationView();
 exports.default = _default;
-},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"src/js/views/bookmarksView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _View = _interopRequireDefault(require("./View.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+class BookmarksView extends _View.default {
+  _parentElement = document.querySelector(".bookmarks__list");
+  _errMsg = "No bookmarks yet. Find a nice recipe and bookmark it ✅";
+  _message = "Great Success!";
+  _generateMarkup() {
+    return this._data.map(this._generateMarkupPreview).join("");
+  }
+  _generateMarkupPreview(result) {
+    const id = window.location.hash.slice(1);
+    return `
+    <li class="preview">
+      <a class="preview__link ${result.id === id ? "preview__link--active" : ""}" href = "#${result.id}" >
+        <figure class="preview__fig">
+          <img src="${result.image}" alt="${result.title}" />
+        </figure>
+        <div class="preview__data">
+          <h4 class="preview__title">${result.title}</h4>
+          <p class="preview__publisher">${result.publisher}</p>
+        </div>
+      </a >
+    </li >
+      `;
+  }
+}
+var _default = new BookmarksView();
+exports.default = _default;
+;
+},{"./View.js":"src/js/views/View.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
 var check = function (it) {
   return it && it.Math == Math && it;
@@ -16862,6 +16897,7 @@ var _recipeView = _interopRequireDefault(require("./views/recipeView.js"));
 var _searchView = _interopRequireDefault(require("./views/searchView.js"));
 var _resultsView = _interopRequireDefault(require("./views/resultsView.js"));
 var _paginationView = _interopRequireDefault(require("./views/paginationView.js"));
+var _bookmarksView = _interopRequireDefault(require("./views/bookmarksView.js"));
 require("core-js/stable");
 require("regenerator-runtime");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -16920,14 +16956,16 @@ const controlServings = function (newServings) {
   _recipeView.default.update(model.state.recipe);
 };
 const controlAddBookmark = function () {
+  // Add or Remove a bookmark
   if (model.state.recipe.bookmarked) {
     model.removeBookmark(model.state.recipe.id);
-    console.log('remove');
   } else {
     model.addBookmark(model.state.recipe);
-    console.log('add');
   }
+  // Update recipe view
   _recipeView.default.update(model.state.recipe);
+  // Render bookmarks
+  _bookmarksView.default.render(model.state.bookmarks);
 };
 
 // Publisher <-> Subscriber pattern
@@ -16940,7 +16978,7 @@ const init = function () {
   _recipeView.default.addHandlerAddBookmark(controlAddBookmark);
 };
 init();
-},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","./views/bookmarksView.js":"src/js/views/bookmarksView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

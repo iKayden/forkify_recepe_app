@@ -245,10 +245,14 @@ const updateServings = function (newServings) {
   return state.recipe.servings = newServings;
 };
 exports.updateServings = updateServings;
+const persistBookmarks = function () {
+  localStorage.setItem("bookmarks", JSON.stringify(state.bookmarks));
+};
 const addBookmark = function (recipe) {
   state.bookmarks.push(recipe);
   // Mark current recipe as bookmarked
   if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+  persistBookmarks();
 };
 exports.addBookmark = addBookmark;
 const removeBookmark = function (id) {
@@ -256,8 +260,14 @@ const removeBookmark = function (id) {
   state.bookmarks.splice(i, 1);
   // Mark current recipe as bookmarked
   if (id === state.recipe.id) state.recipe.bookmarked = false;
+  persistBookmarks();
 };
 exports.removeBookmark = removeBookmark;
+const init = function () {
+  const storage = localStorage.getItem("bookmarks");
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();
 },{"./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -800,6 +810,9 @@ class BookmarksView extends _View.default {
   _parentElement = document.querySelector(".bookmarks__list");
   _errMsg = "No bookmarks yet. Find a nice recipe and bookmark it ✅";
   _message = "Great Success!";
+  addHandlerRender(handler) {
+    window.addEventListener("load", handler);
+  }
   _generateMarkup() {
     return this._data.map(bookmark => _previewView.default.render(bookmark, false)).join("");
   }
@@ -16940,8 +16953,8 @@ const controlSearchResults = async function () {
     await model.loadSearchResult(query);
     // render results
     _resultsView.default.render(model.getSearchResultsPage(1));
-    // render initial pagination btns
     _paginationView.default.render(model.state.search);
+    // render initial pagination btns
   } catch (err) {
     console.log('err', err);
   }
@@ -16970,10 +16983,14 @@ const controlAddBookmark = function () {
   // Render bookmarks
   _bookmarksView.default.render(model.state.bookmarks);
 };
+const controlBookmarks = function () {
+  _bookmarksView.default.render(model.state.bookmarks);
+};
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
 const init = function () {
+  _bookmarksView.default.addHandlerRender(controlBookmarks);
   _recipeView.default.addHandlerRender(controlRecipes);
   _recipeView.default.addHandlerUpdateServings(controlServings);
   _searchView.default.addHandlerSearch(controlSearchResults);

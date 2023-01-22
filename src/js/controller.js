@@ -28,6 +28,7 @@ const controlRecipes = async function() {
     await model.loadRecipe(id);
     // Rendering Received Data
     recipeView.render(model.state.recipe);
+
   } catch (error) {
     recipeView.renderError();
   }
@@ -44,8 +45,8 @@ const controlSearchResults = async function() {
     await model.loadSearchResult(query);
     // render results
     resultsView.render(model.getSearchResultsPage(1));
-    // render initial pagination btns
     paginationView.render(model.state.search);
+    // render initial pagination btns
   } catch (err) {
     console.log('err', err);
   }
@@ -78,10 +79,15 @@ const controlAddBookmark = function() {
   bookmarksView.render(model.state.bookmarks);
 };
 
+const controlBookmarks = function() {
+  bookmarksView.render(model.state.bookmarks);
+};
+
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
 const init = function() {
+  bookmarksView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);

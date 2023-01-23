@@ -823,7 +823,50 @@ class BookmarksView extends _View.default {
 var _default = new BookmarksView();
 exports.default = _default;
 ;
-},{"./View.js":"src/js/views/View.js","./previewView.js":"src/js/views/previewView.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js","./previewView.js":"src/js/views/previewView.js"}],"src/js/views/addRecipeView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _View = _interopRequireDefault(require("./View.js"));
+var _icons = _interopRequireDefault(require("../../img/icons.svg"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+class AddRecipeView extends _View.default {
+  _parentElement = document.querySelector(".upload");
+  _window = document.querySelector(".add-recipe-window");
+  _overlay = document.querySelector(".overlay");
+  _btnOpen = document.querySelector(".nav__btn--add-recipe");
+  _btnClose = document.querySelector(".btn--close-modal");
+  constructor() {
+    super();
+    this._addHandlerShowForm();
+    this._addHandlerHideForm();
+  }
+  toggleForm() {
+    this._overlay.classList.toggle(".hidden");
+    this._window.classList.toggle(".hidden");
+  }
+  _addHandlerShowForm() {
+    this._btnOpen.addEventListener("click", this.toggleForm.bind(this));
+  }
+  _addHandlerHideForm() {
+    this._btnClose.addEventListener("click", this.toggleForm.bind(this));
+    this._overlay.addEventListener("click", this.toggleForm.bind(this));
+  }
+  addHandlerUpload(handler) {
+    this._parentElement.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const data = [...new FormData(this)];
+      handler(data);
+    });
+  }
+  _generateMarkup() {}
+}
+var _default = new AddRecipeView();
+exports.default = _default;
+},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
 var check = function (it) {
   return it && it.Math == Math && it;
@@ -16916,6 +16959,7 @@ var _searchView = _interopRequireDefault(require("./views/searchView.js"));
 var _resultsView = _interopRequireDefault(require("./views/resultsView.js"));
 var _paginationView = _interopRequireDefault(require("./views/paginationView.js"));
 var _bookmarksView = _interopRequireDefault(require("./views/bookmarksView.js"));
+var _addRecipeView = _interopRequireDefault(require("./views/addRecipeView.js"));
 require("core-js/stable");
 require("regenerator-runtime");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -16989,6 +17033,9 @@ const controlAddBookmark = function () {
 const controlBookmarks = function () {
   _bookmarksView.default.render(model.state.bookmarks);
 };
+const controlAddRecipe = function (newRecipe) {
+  console.log(newRecipe);
+};
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function
@@ -16996,12 +17043,13 @@ const init = function () {
   _bookmarksView.default.addHandlerRender(controlBookmarks);
   _recipeView.default.addHandlerRender(controlRecipes);
   _recipeView.default.addHandlerUpdateServings(controlServings);
+  _recipeView.default.addHandlerAddBookmark(controlAddBookmark);
   _searchView.default.addHandlerSearch(controlSearchResults);
   _paginationView.default.addHandlerClick(controlPagination);
-  _recipeView.default.addHandlerAddBookmark(controlAddBookmark);
+  _addRecipeView.default.addHandlerUpload(controlAddRecipe);
 };
 init();
-},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","./views/bookmarksView.js":"src/js/views/bookmarksView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","./views/bookmarksView.js":"src/js/views/bookmarksView.js","./views/addRecipeView.js":"src/js/views/addRecipeView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -17026,7 +17074,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33601" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42203" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

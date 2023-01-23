@@ -95,8 +95,13 @@ export const removeBookmark = function(id) {
   persistBookmarks();
 };
 
+const clearBookmarks = function() {
+  localStorage.clear("bookmarks");
+};
+
 const init = function() {
   const storage = localStorage.getItem("bookmarks");
   if (storage) state.bookmarks = JSON.parse(storage);
 };
 init();
+

@@ -1,6 +1,5 @@
 import { TIMEOUT_SEC } from "./config";
 
-
 const timeout = function(s) {
   return new Promise(function(_, reject) {
     setTimeout(function() {
@@ -12,6 +11,25 @@ const timeout = function(s) {
 export const getJSON = async function(url) {
   try {
     const res = await Promise.race([fetch(url), timeout(TIMEOUT_SEC)]);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(`${data.message} (Status: ${res.status})`);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const sendJSON = async function(url, uploadData) {
+  try {
+    const sendReq = fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(uploadData)
+    });
+    const res = await Promise.race([sendReq, timeout(TIMEOUT_SEC)]);
     const data = await res.json();
 
     if (!res.ok) throw new Error(`${data.message} (Status: ${res.status})`);

@@ -2,10 +2,11 @@ import View from "./View.js";
 import icons from "../../img/icons.svg";
 class AddRecipeView extends View {
   _parentElement = document.querySelector(".upload");
-  _window = document.querySelector(".add-recipe-window");
-  _overlay = document.querySelector(".overlay");
-  _btnOpen = document.querySelector(".nav__btn--add-recipe");
-  _btnClose = document.querySelector(".btn--close-modal");
+
+  _window = document.querySelector('.add-recipe-window');
+  _overlay = document.querySelector('.overlay');
+  _btnOpen = document.querySelector('.nav__btn--add-recipe');
+  _btnClose = document.querySelector('.btn--close-modal');
 
   constructor() {
     super();
@@ -14,8 +15,8 @@ class AddRecipeView extends View {
   }
 
   toggleForm() {
-    this._overlay.classList.toggle(".hidden");
-    this._window.classList.toggle(".hidden");
+    this._overlay.classList.toggle("hidden");
+    this._window.classList.toggle("hidden");
   }
   _addHandlerShowForm() {
     this._btnOpen.addEventListener("click", this.toggleForm.bind(this));

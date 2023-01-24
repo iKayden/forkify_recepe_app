@@ -835,18 +835,18 @@ var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class AddRecipeView extends _View.default {
   _parentElement = document.querySelector(".upload");
-  _window = document.querySelector(".add-recipe-window");
-  _overlay = document.querySelector(".overlay");
-  _btnOpen = document.querySelector(".nav__btn--add-recipe");
-  _btnClose = document.querySelector(".btn--close-modal");
+  _window = document.querySelector('.add-recipe-window');
+  _overlay = document.querySelector('.overlay');
+  _btnOpen = document.querySelector('.nav__btn--add-recipe');
+  _btnClose = document.querySelector('.btn--close-modal');
   constructor() {
     super();
     this._addHandlerShowForm();
     this._addHandlerHideForm();
   }
   toggleForm() {
-    this._overlay.classList.toggle(".hidden");
-    this._window.classList.toggle(".hidden");
+    this._overlay.classList.toggle("hidden");
+    this._window.classList.toggle("hidden");
   }
   _addHandlerShowForm() {
     this._btnOpen.addEventListener("click", this.toggleForm.bind(this));
@@ -17074,7 +17074,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42203" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45769" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

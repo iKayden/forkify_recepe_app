@@ -167,7 +167,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateServings = exports.state = exports.removeBookmark = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = exports.addBookmark = void 0;
+exports.uploadRecipe = exports.updateServings = exports.state = exports.removeBookmark = exports.loadSearchResult = exports.loadRecipe = exports.getSearchResultsPage = exports.addBookmark = void 0;
 var _config = require("./config.js");
 var _helpers = require("./helpers.js");
 const state = {
@@ -271,6 +271,18 @@ const init = function () {
   if (storage) state.bookmarks = JSON.parse(storage);
 };
 init();
+const uploadRecipe = async function (newRecipe) {
+  const ingredients = Object.entries(newRecipe).filter(entry => entry[0].startsWith("ingredient") && entry[1] !== "").map(ing => {
+    const [quantity, unit, description] = ing[1].replaceAll(" ", "").split(",");
+    return {
+      quantity,
+      unit,
+      description
+    };
+  });
+  console.log(ingredients);
+};
+exports.uploadRecipe = uploadRecipe;
 },{"./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -858,7 +870,9 @@ class AddRecipeView extends _View.default {
   addHandlerUpload(handler) {
     this._parentElement.addEventListener("submit", function (e) {
       e.preventDefault();
-      const data = [...new FormData(this)];
+      const dataArr = [...new FormData(this)];
+      // Converts arr to object
+      const data = Object.fromEntries(dataArr);
       handler(data);
     });
   }
@@ -17034,7 +17048,7 @@ const controlBookmarks = function () {
   _bookmarksView.default.render(model.state.bookmarks);
 };
 const controlAddRecipe = function (newRecipe) {
-  console.log(newRecipe);
+  model.uploadRecipe(newRecipe);
 };
 
 // Publisher <-> Subscriber pattern

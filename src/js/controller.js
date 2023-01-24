@@ -85,9 +85,8 @@ const controlBookmarks = function() {
 };
 
 const controlAddRecipe = function(newRecipe) {
-  console.log(newRecipe);
+  model.uploadRecipe(newRecipe);
 };
-
 
 // Publisher <-> Subscriber pattern
 // This is a Subscriber function

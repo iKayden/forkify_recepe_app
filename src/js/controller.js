@@ -7,6 +7,7 @@ import bookmarksView from "./views/bookmarksView.js";
 import addRecipeView from "./views/addRecipeView.js";
 import "core-js/stable";
 import "regenerator-runtime";
+import { MODAL_CLOSE_SEC } from "./config.js";
 
 // Keeps the state of the app after code has been changed
 // if (module.hot) {
@@ -86,8 +87,14 @@ const controlBookmarks = function() {
 
 const controlAddRecipe = async function(newRecipe) {
   try {
+    addRecipeView.renderSpinner();
+
     await model.uploadRecipe(newRecipe);
     console.log(model.state.recipe);
+
+    recipeView.render(model.state.recipe);
+    setTimeout(() => addRecipeView.toggleForm(), MODAL_CLOSE_SEC * 1000);
+    addRecipeView.renderMessage();
   } catch (err) {
     console.log("❗❗❗❗❗", err);
     addRecipeView.renderError(err.message);

@@ -123,7 +123,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TIMEOUT_SEC = exports.RES_PER_PAGE = exports.API_URL = exports.API_KEY = void 0;
+exports.TIMEOUT_SEC = exports.RES_PER_PAGE = exports.MODAL_CLOSE_SEC = exports.API_URL = exports.API_KEY = void 0;
 // To store all constants that should be reused across the App
 // Made to make it easier to configure the app
 
@@ -135,6 +135,8 @@ const TIMEOUT_SEC = 10;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
 const RES_PER_PAGE = 13;
 exports.RES_PER_PAGE = RES_PER_PAGE;
+const MODAL_CLOSE_SEC = 2.5;
+exports.MODAL_CLOSE_SEC = MODAL_CLOSE_SEC;
 },{}],"src/js/helpers.js":[function(require,module,exports) {
 "use strict";
 
@@ -277,6 +279,7 @@ var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class AddRecipeView extends _View.default {
   _parentElement = document.querySelector(".upload");
+  _message = "Recipe was successfully uploaded ✅";
   _window = document.querySelector('.add-recipe-window');
   _overlay = document.querySelector('.overlay');
   _btnOpen = document.querySelector('.nav__btn--add-recipe');
@@ -17021,6 +17024,7 @@ var _bookmarksView = _interopRequireDefault(require("./views/bookmarksView.js"))
 var _addRecipeView = _interopRequireDefault(require("./views/addRecipeView.js"));
 require("core-js/stable");
 require("regenerator-runtime");
+var _config = require("./config.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -17094,8 +17098,12 @@ const controlBookmarks = function () {
 };
 const controlAddRecipe = async function (newRecipe) {
   try {
+    _addRecipeView.default.renderSpinner();
     await model.uploadRecipe(newRecipe);
     console.log(model.state.recipe);
+    _recipeView.default.render(model.state.recipe);
+    setTimeout(() => _addRecipeView.default.toggleForm(), _config.MODAL_CLOSE_SEC * 1000);
+    _addRecipeView.default.renderMessage();
   } catch (err) {
     console.log("❗❗❗❗❗", err);
     _addRecipeView.default.renderError(err.message);
@@ -17114,7 +17122,7 @@ const init = function () {
   _addRecipeView.default.addHandlerUpload(controlAddRecipe);
 };
 init();
-},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","./views/bookmarksView.js":"src/js/views/bookmarksView.js","./views/addRecipeView.js":"src/js/views/addRecipeView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/recipeView.js":"src/js/views/recipeView.js","./views/searchView.js":"src/js/views/searchView.js","./views/resultsView.js":"src/js/views/resultsView.js","./views/paginationView.js":"src/js/views/paginationView.js","./views/bookmarksView.js":"src/js/views/bookmarksView.js","./views/addRecipeView.js":"src/js/views/addRecipeView.js","core-js/stable":"node_modules/core-js/stable/index.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config.js":"src/js/config.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

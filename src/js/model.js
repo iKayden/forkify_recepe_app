@@ -23,7 +23,9 @@ const createRecipeObject = function(data) {
     image: recipe.image_url,
     servings: recipe.servings,
     cookingTime: recipe.cooking_time,
-    ingredients: recipe.ingredients
+    ingredients: recipe.ingredients,
+    // trick to conditionally add properties to an object
+    ...(recipe.key && { key: recipe.key })
   };
 };
 

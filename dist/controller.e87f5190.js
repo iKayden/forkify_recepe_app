@@ -344,7 +344,11 @@ const createRecipeObject = function (data) {
     image: recipe.image_url,
     servings: recipe.servings,
     cookingTime: recipe.cooking_time,
-    ingredients: recipe.ingredients
+    ingredients: recipe.ingredients,
+    // trick to conditionally add properties to an object
+    ...(recipe.key && {
+      key: recipe.key
+    })
   };
 };
 
@@ -17135,7 +17139,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "32787" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44599" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

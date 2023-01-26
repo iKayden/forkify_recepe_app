@@ -1,5 +1,5 @@
 import { API_KEY, API_URL, RES_PER_PAGE } from "./config.js";
-import { getJSON, sendJSON } from "./helpers.js";
+import { AJAX } from "./helpers.js";
 import addRecipeView from "./views/addRecipeView.js";
 
 export const state = {
@@ -32,7 +32,7 @@ const createRecipeObject = function(data) {
 // Function to change State Recipe Object
 export const loadRecipe = async function(id) {
   try {
-    const data = await getJSON(`${API_URL}${id}`);
+    const data = await AJAX(`${API_URL}${id}?key=${API_KEY}`);
 
     state.recipe = createRecipeObject(data);
     // assigns all recipes with "bookmarked" value and checks if any already marked
@@ -52,13 +52,14 @@ export const loadSearchResult = async function(query) {
   try {
     state.search.page = 1;
     state.search.query = query;
-    const data = await getJSON(`${API_URL}?search=${query}`);
+    const data = await AJAX(`${API_URL}?search=${query}&key=${API_KEY}`);
     state.search.results = data.data.recipes.map(rec => {
       return {
         id: rec.id,
         title: rec.title,
         publisher: rec.publisher,
         image: rec.image_url,
+        ...(rec.key && { key: rec.key })
       };
     });
   } catch (err) {
@@ -106,11 +107,6 @@ const clearBookmarks = function() {
   localStorage.clear("bookmarks");
 };
 
-const init = function() {
-  const storage = localStorage.getItem("bookmarks");
-  if (storage) state.bookmarks = JSON.parse(storage);
-};
-init();
 
 export const uploadRecipe = async function(newRecipe) {
   try {
@@ -138,7 +134,7 @@ export const uploadRecipe = async function(newRecipe) {
       servings: +newRecipe.servings,
       ingredients
     };
-    const data = await sendJSON(`${API_URL}?key=${API_KEY}`, recipe);
+    const data = await AJAX(`${API_URL}?key=${API_KEY}`, recipe);
     state.recipe = createRecipeObject(data);
     addBookmark(state.recipe);
   } catch (err) {
@@ -147,3 +143,8 @@ export const uploadRecipe = async function(newRecipe) {
   }
 };
 
+const init = function() {
+  const storage = localStorage.getItem("bookmarks");
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();

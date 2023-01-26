@@ -143,7 +143,7 @@ exports.MODAL_CLOSE_SEC = MODAL_CLOSE_SEC;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.sendJSON = exports.getJSON = void 0;
+exports.AJAX = void 0;
 var _config = require("./config");
 const timeout = function (s) {
   return new Promise(function (_, reject) {
@@ -152,27 +152,16 @@ const timeout = function (s) {
     }, s * 1000);
   });
 };
-const getJSON = async function (url) {
+const AJAX = async function (url, uploadData = undefined) {
   try {
-    const res = await Promise.race([fetch(url), timeout(_config.TIMEOUT_SEC)]);
-    const data = await res.json();
-    if (!res.ok) throw new Error(`${data.message} (Status: ${res.status})`);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-};
-exports.getJSON = getJSON;
-const sendJSON = async function (url, uploadData) {
-  try {
-    const sendReq = fetch(url, {
+    const fetchPro = uploadData ? fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(uploadData)
-    });
-    const res = await Promise.race([sendReq, timeout(_config.TIMEOUT_SEC)]);
+    }) : fetch(url);
+    const res = await Promise.race([fetchPro, timeout(_config.TIMEOUT_SEC)]);
     const data = await res.json();
     if (!res.ok) throw new Error(`${data.message} (Status: ${res.status})`);
     return data;
@@ -180,7 +169,7 @@ const sendJSON = async function (url, uploadData) {
     throw error;
   }
 };
-exports.sendJSON = sendJSON;
+exports.AJAX = AJAX;
 },{"./config":"src/js/config.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -358,7 +347,7 @@ const createRecipeObject = function (data) {
 // Function to change State Recipe Object
 const loadRecipe = async function (id) {
   try {
-    const data = await (0, _helpers.getJSON)(`${_config.API_URL}${id}`);
+    const data = await (0, _helpers.AJAX)(`${_config.API_URL}${id}?key=${_config.API_KEY}`);
     state.recipe = createRecipeObject(data);
     // assigns all recipes with "bookmarked" value and checks if any already marked
     if (state.bookmarks.some(bookmark => bookmark.id === id)) {
@@ -376,13 +365,16 @@ const loadSearchResult = async function (query) {
   try {
     state.search.page = 1;
     state.search.query = query;
-    const data = await (0, _helpers.getJSON)(`${_config.API_URL}?search=${query}`);
+    const data = await (0, _helpers.AJAX)(`${_config.API_URL}?search=${query}&key=${_config.API_KEY}`);
     state.search.results = data.data.recipes.map(rec => {
       return {
         id: rec.id,
         title: rec.title,
         publisher: rec.publisher,
-        image: rec.image_url
+        image: rec.image_url,
+        ...(rec.key && {
+          key: rec.key
+        })
       };
     });
   } catch (err) {
@@ -427,11 +419,6 @@ exports.removeBookmark = removeBookmark;
 const clearBookmarks = function () {
   localStorage.clear("bookmarks");
 };
-const init = function () {
-  const storage = localStorage.getItem("bookmarks");
-  if (storage) state.bookmarks = JSON.parse(storage);
-};
-init();
 const uploadRecipe = async function (newRecipe) {
   try {
     const ingredients = Object.entries(newRecipe).filter(entry => entry[0].startsWith("ingredient") && entry[1] !== "").map(ing => {
@@ -453,7 +440,7 @@ const uploadRecipe = async function (newRecipe) {
       servings: +newRecipe.servings,
       ingredients
     };
-    const data = await (0, _helpers.sendJSON)(`${_config.API_URL}?key=${_config.API_KEY}`, recipe);
+    const data = await (0, _helpers.AJAX)(`${_config.API_URL}?key=${_config.API_KEY}`, recipe);
     state.recipe = createRecipeObject(data);
     addBookmark(state.recipe);
   } catch (err) {
@@ -462,6 +449,11 @@ const uploadRecipe = async function (newRecipe) {
   }
 };
 exports.uploadRecipe = uploadRecipe;
+const init = function () {
+  const storage = localStorage.getItem("bookmarks");
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();
 },{"./config.js":"src/js/config.js","./helpers.js":"src/js/helpers.js","./views/addRecipeView.js":"src/js/views/addRecipeView.js"}],"node_modules/fracty/fracty.js":[function(require,module,exports) {
 // FRACTY CONVERTS DECIMAL NUMBERS TO FRACTIONS BY ASSUMING THAT TRAILING PATTERNS FROM 10^-2 CONTINUE TO REPEAT
 // The assumption is based on the most standard numbering conventions
@@ -706,9 +698,12 @@ class RecipeView extends _View.default {
           </div>
         </div>
 
-        <div class="recipe__user-generated">
-
+        <div class="recipe__user-generated ${this._data.key ? "" : "hidden"}">
+          <svg>
+            <use href="${_icons.default}#icon-user"></use>
+          </svg>
         </div>
+
         <button class="btn--round btn--bookmark">
           <svg class="">
             <use href="${_icons.default}#icon-bookmark${this._data.bookmarked ? "-fill" : ""}"></use>
@@ -722,24 +717,24 @@ class RecipeView extends _View.default {
         ${this._data.ingredients.map(this._generateIngredient).join("")}
       </div >
 
-  <div class="recipe__directions">
-    <h2 class="heading--2">How to cook it</h2>
-    <p class="recipe__directions-text">
-      This recipe was carefully designed and tested by
-      <span class="recipe__publisher">${this._data.publisher}</span>. Please check out
-      directions at their website.
-    </p>
-    <a
-      class="btn--small recipe__btn"
-      href="${this._data.sourceUrl}"
-      target="_blank"
-    >
-      <span>Directions</span>
-      <svg class="search__icon">
-        <use href="src/img/icons.svg#icon-arrow-right"></use>
-      </svg>
-    </a>
-  </div>;
+      <div class="recipe__directions">
+        <h2 class="heading--2">How to cook it</h2>
+        <p class="recipe__directions-text">
+          This recipe was carefully designed and tested by
+          <span class="recipe__publisher">${this._data.publisher}</span>. Please check out
+          directions at their website.
+        </p>
+        <a
+          class="btn--small recipe__btn"
+          href="${this._data.sourceUrl}"
+          target="_blank"
+        >
+          <span>Directions</span>
+          <svg class="search__icon">
+            <use href="src/img/icons.svg#icon-arrow-right"></use>
+          </svg>
+        </a>
+      </div>;
 `;
   }
   _generateIngredient(ing) {
@@ -793,6 +788,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _View = _interopRequireDefault(require("./View.js"));
+var _icons = _interopRequireDefault(require("../../img/icons.svg"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class PreviewView extends _View.default {
   _parentElement = "";
@@ -807,6 +803,11 @@ class PreviewView extends _View.default {
         <div class="preview__data">
           <h4 class="preview__title">${this._data.title}</h4>
           <p class="preview__publisher">${this._data.publisher}</p>
+          <div class="preview__user-generated ${this._data.key ? "" : "hidden"}">
+            <svg>
+              <use href="${_icons.default}#icon-user"></use>
+            </svg>
+          </div>
         </div>
       </a >
     </li >
@@ -816,7 +817,7 @@ class PreviewView extends _View.default {
 var _default = new PreviewView();
 exports.default = _default;
 ;
-},{"./View.js":"src/js/views/View.js"}],"src/js/views/resultsView.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"src/js/views/resultsView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17100,10 +17101,11 @@ const controlAddRecipe = async function (newRecipe) {
   try {
     _addRecipeView.default.renderSpinner();
     await model.uploadRecipe(newRecipe);
-    console.log(model.state.recipe);
     _recipeView.default.render(model.state.recipe);
-    setTimeout(() => _addRecipeView.default.toggleForm(), _config.MODAL_CLOSE_SEC * 1000);
     _addRecipeView.default.renderMessage();
+    _bookmarksView.default.render(model.state.bookmarks);
+    window.history.pushState(null, "", `#${model.state.recipe.id}`);
+    setTimeout(() => _addRecipeView.default.toggleForm(), _config.MODAL_CLOSE_SEC * 1000);
   } catch (err) {
     console.log("❗❗❗❗❗", err);
     _addRecipeView.default.renderError(err.message);
@@ -17147,7 +17149,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44599" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41639" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

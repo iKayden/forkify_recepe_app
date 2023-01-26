@@ -90,11 +90,16 @@ const controlAddRecipe = async function(newRecipe) {
     addRecipeView.renderSpinner();
 
     await model.uploadRecipe(newRecipe);
-    console.log(model.state.recipe);
 
     recipeView.render(model.state.recipe);
-    setTimeout(() => addRecipeView.toggleForm(), MODAL_CLOSE_SEC * 1000);
+
     addRecipeView.renderMessage();
+
+    bookmarksView.render(model.state.bookmarks);
+
+    window.history.pushState(null, "", `#${model.state.recipe.id}`);
+
+    setTimeout(() => addRecipeView.toggleForm(), MODAL_CLOSE_SEC * 1000);
   } catch (err) {
     console.log("❗❗❗❗❗", err);
     addRecipeView.renderError(err.message);

@@ -2,12 +2,13 @@
   "name": "forkify",
   "version": "1.0.0",
   "description": "",
+  "default": "index.html",
   "browserslist": [
     "last 1 Chrome versions"
   ],
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html --no-minify --out-dir ./dist"
   },
   "author": "Kayden",
   "license": "ISC",
